@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der Weg zum Vermächtnis der Magier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            /* Container darf etwas breiter werden, wenn viel Text kommt */
+            max-width: 90%; 
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 14px;
+            min-height: 20px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .info {
+            color: #28a745;
+        }
+
+        /* Styling für den Erfolgs-Text */
+        #success-screen {
+            display: none; /* Ist am Anfang unsichtbar */
+            text-align: left;
+            line-height: 1.6;
+            color: #444;
+        }
+        
+        #success-screen h2 {
+            text-align: center;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="login-screen">
+            <h2>Findest du den Code zum Vermächtnis von Dr. Hensch Stone?</h2>
+            <div class="input-group">
+                <input type="text" id="digit1" maxlength="1" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                <input type="text" id="digit2" maxlength="1" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                <input type="text" id="digit3" maxlength="1" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+            </div>
+            <button id="submitBtn">Code prüfen</button>
+            <div id="message"></div>
+        </div>
+
+        <div id="success-screen">
+            <h2>Gut gemacht, Thomas!</h2>
+            <p>Du hast das Rätsel gelöst und die korrekte Kombination eingegeben.</p>
+            <p><strong>Du kommst dem Vermächtnis von Dr. Hensch Stone immer näher!</strong></p>
+            <p>Ich hoffe, dass du nach dem gestrigen Fußballspiel wieder fit bist, denn du musst jetzt die Stiegen hinab zum Postkasten gehen! Nimm den Schlüssel mit!</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Variablen für den Sperr-Status
+        let isLocked = false;
+        let remainingSeconds = 0;
+        let countdownInterval;
+
+        const btn = document.getElementById('submitBtn');
+        const messageDiv = document.getElementById('message');
+        const loginScreen = document.getElementById('login-screen');
+        const successScreen = document.getElementById('success-screen');
+
+        btn.addEventListener('click', function() {
+            // Verbleibende Zeit anzeigen
+            if (isLocked) {
+                messageDiv.textContent = `Nicht so ungeduldig, Thomas! Bitte warte noch ${remainingSeconds} Sekunden.`;
+                messageDiv.className = 'error';
+                return;
+            }
+
+            // Werte der Eingabefelder auslesen
+            const val1 = document.getElementById('digit1').value;
+            const val2 = document.getElementById('digit2').value;
+            const val3 = document.getElementById('digit3').value;
+
+            // Code prüfen
+            if (val1 === '7' && val2 === '3' && val3 === '0') {
+                // Bei Erfolg: Verstecke die Eingabe und zeige den Text
+                loginScreen.style.display = 'none';
+                successScreen.style.display = 'block';
+            } else {
+                // Sperre aktivieren bei falschem Code
+                isLocked = true;
+                remainingSeconds = 15;
+                
+                messageDiv.textContent = `Das war leider nicht die Lösung... Versuche es in 15 Sekunden nochmal!`;
+                messageDiv.className = 'error';
+
+                // Timer-Intervall starten
+                countdownInterval = setInterval(function() {
+                    remainingSeconds--;
+
+                    if (remainingSeconds <= 0) {
+                        // Sperre aufheben, wenn Zeit abgelaufen
+                        clearInterval(countdownInterval);
+                        isLocked = false;
+                        messageDiv.textContent = "Du kannst es jetzt erneut versuchen.";
+                        messageDiv.className = 'info';
+                    }
+                }, 1000); // 1000 ms = 1 s
+            }
+        });
+    </script>
+
+</body>
+</html>
